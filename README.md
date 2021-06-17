@@ -1,4 +1,4 @@
-# Graph-Traversals
+# Graph-Traversals <img src="https://github.com/ColdCoffee21/Graph-Traversals/blob/master/static/favicon.ico" alt="" width="30" height="30">
 A Flask application to visualize the graph data structure and it’s traversals.
 
 This application was built with the aim of helping students assimilate and internalise the concepts behind graphs. We understand that it may seem to be an intellectually challenging task for new-comers to the programming world. This is a small visual gift from us! :gift:
@@ -18,6 +18,9 @@ We are open to contribution! Follow these steps and join us ->
 - Make your awesome changes, push your changes into a new branch.
 - Send in a pull-request :)
 
+# Open Source License
+
+Read the license [here](https://github.com/ColdCoffee21/Graph-Traversals/blob/master/LICENSE)
 
 # Contributors :sparkles:
 
