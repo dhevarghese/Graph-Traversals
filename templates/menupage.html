@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/styles.css') }}">
+    <!--<link rel="stylesheet" href="{{ url_for('static',filename='css/nextprevbuttons.css') }}"> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static',filename='js/modalbox.js') }}"></script> 
+    <script src="{{ url_for('static',filename='js/graphVis.js') }}"></script> 
+    <!-- For visualisation -->
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="{{ url_for('static',filename='js/jsnetworkx.js') }}"></script>
+    
+    <title>Graph traversals</title>
+</head>
+<body>
+  {% macro input(name, id='', type='radio') -%}
+    <input type="{{ type }}" name="dark" id="{{ id }}">
+      <span class="design"></span>
+      <span class="text">{{ name }}</span>
+  {%- endmacro %}
+
+  {% macro Modal(modalTitle, modalId, formId, formText, formInputId, formInputId2=None, formText2=None) -%}
+    <div id="{{ modalId }}" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">{{ modalTitle }}</h4>
+          </div>
+          <form id="{{ formId }}" method="post">
+            <div class="modal-body">
+
+              <label for="{{ formInputId }}">{{ formText }}</label><br><br>
+              <input type="number" id="{{ formInputId }}" name="{{ formInputId }}" style="z-index: 0;" min="1" required><br>
+              {% if formInputId2 %}              
+                <label for="{{ formInputId2 }}">{{ formText2 }}</label><br><br>
+                <input type="number" id="{{ formInputId2 }}" name="{{ formInputId2 }}" style="z-index: 0;" min="1" required><br>
+              {% endif %}
+
+            </div>
+            <div class="modal-footer">
+              <input type="submit" id="submitButton" class="btn btn-default" value="Submit" style="left: 0%; top: 0%; z-index: 1; transform: translate(0%, 0%)">
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  {%- endmacro %}
+    
+  <section class="dark">
+  
+    <h1>Options</h1>
+    <div style="align-items: center;">
+      <label>{{ input('Random Graph', id='randomGraph') }}</label>
+      <label>{{ input('Add Node', id='addNode') }}</label>
+      <label>{{ input('Delete Node', id='deleteNode') }}</label>
+      <label>{{ input('Add Edge', id='addEdge') }}</label>
+      <label>{{ input('Delete Edge', id='deleteEdge') }}</label>
+      <label>{{ input('Breadth First Search', id='bfs') }}</label>
+      <label>{{ input('Depth First Search', id='dfs') }}</label>
+      <label>{{ input('Adjacency Matrix', id='adjmat') }}</label>
+      <label>{{ input('Adjacency List', id='adjlist') }}</label>
+    </div>
+    
+    
+    {{ Modal(modalTitle="Add Node", modalId="addNodeModal", formId="addNodeForm", formText="Enter the number of nodes to be added", formInputId="number-of-new-nodes") }}
+    {{ Modal(modalTitle="Delete Node", modalId="deleteNodeModal", formId="deleteNodeForm", formText="Enter the node to be deleted", formInputId="nodeDelete") }}
+    
+    {{ Modal(modalTitle="Add Edge", modalId="addEdgeModal", formId="addEdgeForm", formText="Enter the first node", formInputId="node1", formInputId2="node2", formText2="Enter the second node") }}
+    {{ Modal(modalTitle="Delete Edge", modalId="deleteEdgeModal", formId="deleteEdgeForm", formText="Enter the first node", formInputId="delNode1", formInputId2="delNode2", formText2="Enter the second node") }}
+
+    {{ Modal(modalTitle="Breadth First Search", modalId="bfsModal", formId="bfsForm", formText="Enter the node to start the bfs from", formInputId="bfsNode") }}
+    {{ Modal(modalTitle="Depth First Search", modalId="dfsModal", formId="dfsForm", formText="Enter the node to start the dfs from", formInputId="dfsNode") }}
+
+    <script>
+      
+      $("#randomGraph").click(function () {
+        $("#TraverseButtons").hide();
+        $.ajax({
+          url: "/random",
+          type: "post",
+          success: function (response) {
+            console.log(response)
+            G.clear()
+            if (response.one) {
+                for (i = response.one.start; i < response.one.end; i++) {
+                G.addNode(i, { count: 8, color: "#0064C7" });
+              }
+            }
+            if(response.two) {
+              //console.log(response.two.length)
+              for (edge in response.two) {
+                G.addEdge(response.two[edge].st,response.two[edge].end);
+              }
+            }
+            visualise();
+          },
+          error: function (xhr) {
+            //Do Something to handle error
+          }
+        });
+      });     
+
+
+      $("#addNodeForm").submit(function(event){
+        event.preventDefault();
+        $('#addNodeModal').modal('toggle');
+        var numNodes = $('#number-of-new-nodes').val();
+        $("#TraverseButtons").hide();
+
+        $.ajax({
+            url: "/add",
+            type: "post",
+            data: {nodes: numNodes},
+            success: function(response) {
+              for(i=response.start; i<response.end;i++){
+                //For random colors
+                //const randomColor = Math.floor(Math.random()*16777215).toString(16);
+                //G.addNode(i,{count: 8, color: "#" + randomColor});
+                G.addNode(i,{count: 8, color: "#0064C7"});
+                visualise();
+              }
+            },
+            error: function(xhr) {
+              //Do Something to handle error
+            }
+          });
+      });
+
+      $("#deleteNodeForm").submit(function(event){
+        event.preventDefault();
+        $('#deleteNodeModal').modal('toggle');
+        var nodeNum = $('#nodeDelete').val();
+        $("#TraverseButtons").hide();
+
+        $.ajax({
+            url: "/delete",
+            type: "post",
+            data: {node: nodeNum},
+            success: function(response) {
+              if(response != null){
+                G.removeNode(parseInt(response,10));
+                visualise();
+              }
+            },
+            error: function(xhr) {
+              //Do Something to handle error
+            }
+          });
+      });
+
+      $("#addEdgeForm").submit(function(event){
+        event.preventDefault();
+        $('#addEdgeModal').modal('toggle');
+        var stNode = $('#node1').val();
+        var endNode = $('#node2').val();
+        $("#TraverseButtons").hide();
+
+        $.ajax({
+            url: "/addEdge",
+            type: "post",
+            data: {st: stNode, end: endNode},
+            success: function(response) {
+              if(response != null){
+                G.addEdge(response.st,response.end);
+                visualise();
+              }
+            },
+            error: function(xhr) {
+              //Do Something to handle error
+            }
+          });
+      });
+
+      $("#deleteEdgeForm").submit(function(event){
+        event.preventDefault();
+        $('#deleteEdgeModal').modal('toggle');
+        var stNode = $('#delNode1').val();
+        var endNode = $('#delNode2').val();
+        $("#TraverseButtons").hide();
+
+        $.ajax({
+            url: "/deleteEdge",
+            type: "post",
+            data: {st: stNode, end: endNode},
+            success: function(response) {
+              console.log(response)
+              if(response.pos){
+                G.removeEdge(response.st,response.end);
+                visualise();
+              }
+            },
+            error: function(xhr) {
+              //Do Something to handle error
+            }
+          });
+      });
+
+      
+      $("#dfsForm").submit(function(event){
+        event.preventDefault();
+        $('#dfsModal').modal('toggle');
+        var dfsNode = $('#dfsNode').val();
+
+        $.ajax({
+            url: "/DFS",
+            type: "post",
+            data: {st: dfsNode},
+            success: function(response) {
+              if(response.pos){
+                //use order to print the dfs one by one using the step button
+                //console.log(response.order);
+                visualiseTraversal(response.order);
+                $("#TraverseButtons").show();
+              }
+            },
+            error: function(xhr) {
+              //Do Something to handle error
+            }
+          });
+      });
+
+      $("#bfsForm").submit(function(event){
+        event.preventDefault();
+        $('#bfsModal').modal('toggle');
+        var bfsNode = $('#bfsNode').val();
+
+        $.ajax({
+            url: "/BFS",
+            type: "post",
+            data: {st: bfsNode},
+            success: function(response) {
+              if(response.pos){
+                console.log(response.order);
+                visualiseTraversal(response.order);
+                $("#TraverseButtons").show();
+              }
+            },
+            error: function(xhr) {
+              //Do Something to handle error
+            }
+          });
+      });
+      $("#adjmat").click(function(){
+          event.preventDefault();
+          $("#TraverseButtons").hide();
+          
+          $.ajax({
+            url: "/Adjmat",
+            type: "post",
+            
+            success: function(response) {
+              console.log(response) 
+              if(response.pos){
+                console.log(response.pos);
+                console.log(response.Matrix);
+                alert(print1TEXT(response.Matrix));
+                print1(response.Matrix);
+               
+                //use order to print the dfs one by one using the step button
+              }
+            },
+            error: function(xhr) {
+              //Do Something to handle error
+            }
+          });
+        });
+
+        $("#adjlist").click(function(){
+          event.preventDefault();
+          $("#TraverseButtons").hide();
+          
+          $.ajax({
+            url: "/Adjlist",
+            type: "post",
+            
+            success: function(response) {
+              console.log(response) 
+              if(response.pos){
+                console.log(response.pos);
+                console.log(response.List);
+                alert(print2TEXT(response.List));
+                print2(response.List);
+
+                //use order to print the dfs one by one using the step button
+              }
+            },
+            error: function(xhr) {
+              //Do Something to handle error
+            }
+          });
+        });
+    </script>
+  </section>
+
+  <section id="demo-canvas" class="light">
+        {% if init %}
+          <h1>HI</h1>
+        {% else %}
+          <div id="ds" class="ds" style="padding-top:25px; align-items: center; display: none;" ></div>
+          <script>
+            var G = new jsnx.DiGraph();
+            visualise();
+          </script>
+        {% endif %}
+
+        <div class="wrapper" id="TraverseButtons" style="display: none;">
+          <button class="prev" onclick="prev()">
+            prev
+          </button>
+          
+          <button class="next" onclick="next()">
+            next
+          </button>
+        </div>
+      
+
+  </section>
+</body>
+</html>

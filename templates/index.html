@@ -1,0 +1,38 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Traversals</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/particle_styles.css') }}" media="screen">
+    <!--
+         <link id="u-theme-google-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i">
+    -->
+</head>
+<body>
+    <div id="particles-js"></div>
+    <script class="u-script" type="text/javascript" src="{{ url_for('static',filename='js/particles.js') }}" defer=""></script>
+    <script class="u-script" type="text/javascript" src="{{ url_for('static',filename='js/app.js') }}" defer=""></script>
+
+    <div class="text">
+        <h1 style="text-align:center">Graph Traversals and Representations</h1>
+    
+        <p><br>A Graph is a non-linear data structure consisting of nodes and edges. The nodes are sometimes also referred to as vertices and the edges are lines or arcs that connect any two nodes in the graph. More formally a Graph can be defined as,A Graph consists of a finite set of vertices(or nodes) and set of Edges which connect a pair of nodes.<br>
+            <br>Graph traversal means visiting every vertex and edge exactly once in a well-defined order. While using certain graph algorithms, you must ensure that each vertex of the graph is visited exactly once. The order in which the vertices are visited are important and may depend upon the algorithm or question that you are solving.
+
+            During a traversal, it is important that you track which vertices have been visited. The most common way of tracking vertices is to mark them. The two traversals which we shall visualise are BFS and DFS.<br>
+            <br><u>Breadth First Search (BFS)</u><br>
+            <br>BFS is a traversing algorithm where you should start traversing from a selected node (source or starting node) and traverse the graph layerwise thus exploring the neighbour nodes (nodes which are directly connected to source node). You must then move towards the next-level neighbour nodes.<br>
+            <br><u>Depth First Search (DFS)</u><br>
+            <br>The DFS algorithm is a recursive algorithm that uses the idea of backtracking. It involves exhaustive searches of all the nodes by going ahead, if possible, else by backtracking.<br>
+          </p>
+         
+          <form  method="POST">
+          <div class="vertical-center">
+            <button class="btn btn-border-3" name="submit-button" type="submit" style="left: 36%;">View More</button>
+          </div>
+        </form>
+
+    </div>
+</body>
+</html>
