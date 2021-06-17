@@ -162,5 +162,6 @@ def graph(nodes):
     return send_file(img, mimetype='image/png')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    #app.run(debug=True)
+    app.run(threaded=True, port=5000)
 
