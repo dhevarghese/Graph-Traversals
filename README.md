@@ -29,8 +29,8 @@ Read the license [here](https://github.com/ColdCoffee21/Graph-Traversals/blob/ma
     <td align="center"><a href="https://github.com/ColdCoffee21"><img src="https://avatars0.githubusercontent.com/u/45462088?v=4" width="100px;" alt=""/><br /><sub><b>Dheeraj Varghese</b></sub></a><br /><a href="" title="Documentation">📖</a> <a href="" title="Design">🎨</a> <a href="" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/kishoresara"><img src="https://avatars.githubusercontent.com/u/44198447?v=4" width="100px;" alt=""/><br /><sub><b>Kishore Saravanan</b></sub></a><br /><a href="" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/SurajWarrier"><img src="https://avatars.githubusercontent.com/u/54532227?v=4" width="100px;" alt=""/><br /><sub><b>Suraj S Warrier</b></sub></a><br /><a href="" title="Design">🎨</a> <a href="" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/AnirudhBalaji"><img src="https://avatars.githubusercontent.com/u/81805817?v=4" width="100px;" alt=""/><br /><sub><b>Anirudh Balaji</b></sub></a><br /><a href="" title="Design">🎨</a> <a href="" title="Code">💻</a></td>
   </tr>
 </table>
-  
   
   
